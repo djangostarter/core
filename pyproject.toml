@@ -1,6 +1,6 @@
 [project]
 name = "django-starter-core"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Core library for DjangoStarter (Web) and DjangoStarter API"
 authors = [
     {name = "DealiAxy", email = "dealiaxy@gmail.com"},
@@ -38,6 +38,10 @@ python_files = ["tests.py", "test_*.py", "*_tests.py"]
 pythonpath = ["src", "."]
 norecursedirs = [".venv", "dist", "build"]
 
+[tool.hatch.version]
+source = "vcs"
+tag-pattern = "^v(?P<version>\\d+\\.\\d+\\.\\d+)$"
+
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"

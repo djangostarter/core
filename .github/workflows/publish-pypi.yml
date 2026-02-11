@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # hatch-vcs / setuptools-scm 需要能拿到 tag 信息
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,7 +33,8 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
-      - name: Validate tag and project version
+      - name: Validate tag and set release version
+        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: |
           set -euo pipefail
@@ -46,36 +50,12 @@ jobs:
             exit 1
           fi
 
-          # 2) 确保 tag 对应的版本号与 pyproject.toml 一致，避免误发错版本
-          python - <<'PY'
-          import os
-          import re
-          from pathlib import Path
-          try:
-            import tomllib  # Python 3.11+
-          except Exception as exc:  # pragma: no cover
-            raise SystemExit(f"tomllib is required (Python 3.11+). Error: {exc}")
-
-          tag = os.environ.get("GITHUB_REF_NAME", "")
-          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
-            raise SystemExit(f"Invalid tag: {tag!r}. Expected 'vMAJOR.MINOR.PATCH'.")
-
-          pyproject_path = Path("pyproject.toml")
-          data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
-          project = data.get("project", {})
-          version = project.get("version")
-          if not version:
-            raise SystemExit("Missing [project].version in pyproject.toml")
-
-          expected = tag[1:]
-          if version != expected:
-            raise SystemExit(
-              f"Version mismatch: tag is {expected!r} but pyproject.toml is {version!r}. "
-              "Please bump [project].version to match the tag before releasing."
-            )
-
-          print(f"Tag version matches pyproject.toml: {version}")
-          PY
+          # 2) 让构建产物版本完全由 tag 决定（不需要手动改 pyproject.toml）
+          # hatch-vcs 基于 setuptools-scm；该环境变量会成为版本的最高优先级来源。
+          RELEASE_VERSION="${TAG_NAME#v}"
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "SETUPTOOLS_SCM_PRETEND_VERSION=$RELEASE_VERSION" >> "$GITHUB_ENV"
+          echo "Release version: $RELEASE_VERSION"
 
       - name: Install build tooling
         shell: bash
@@ -103,7 +83,7 @@ jobs:
       # 2) 在 GitHub 仓库 Settings -> Secrets and variables -> Actions 添加：
       #    PYPI_API_TOKEN = pypi-****
       - name: Publish to PyPI (token)
-        if: ${{ secrets.PYPI_API_TOKEN != '' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.PYPI_API_TOKEN != '' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
@@ -111,5 +91,5 @@ jobs:
       # 发布方式 B：Trusted Publisher（OIDC，更安全，无需保存 token）
       # 需要你在 PyPI 项目设置里将该 GitHub 仓库配置为 Trusted Publisher。
       - name: Publish to PyPI (trusted publishing)
-        if: ${{ secrets.PYPI_API_TOKEN == '' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.PYPI_API_TOKEN == '' }}
         uses: pypa/gh-action-pypi-publish@release/v1
