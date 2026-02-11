@@ -1,0 +1,115 @@
+name: Publish to PyPI
+
+on:
+  push:
+    # 仅当推送形如 v1.0.0 的 tag 时触发（GitHub 这里是 glob，不是正则）
+    # 为了避免 v1.0.0-rc1 之类误触发，后续步骤会做严格的 SemVer 校验。
+    tags:
+      - "v*.*.*"
+  # 允许在 GitHub UI 手动触发（不会自动发布，仍会跑版本校验与构建流程）
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  # 若你在 PyPI 侧配置了 Trusted Publisher（OIDC），需要开启该权限
+  id-token: write
+
+jobs:
+  build-and-publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          # pyproject.toml 声明 requires-python >= 3.12
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Validate tag and project version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # 1) 只允许严格 SemVer: vMAJOR.MINOR.PATCH
+          TAG_NAME="${GITHUB_REF_NAME:-}"
+          if [[ -z "$TAG_NAME" ]]; then
+            echo "GITHUB_REF_NAME is empty; expected to be a tag like v1.0.0"
+            exit 1
+          fi
+          if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag '$TAG_NAME' is not a strict SemVer tag like v1.0.0"
+            exit 1
+          fi
+
+          # 2) 确保 tag 对应的版本号与 pyproject.toml 一致，避免误发错版本
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+          try:
+            import tomllib  # Python 3.11+
+          except Exception as exc:  # pragma: no cover
+            raise SystemExit(f"tomllib is required (Python 3.11+). Error: {exc}")
+
+          tag = os.environ.get("GITHUB_REF_NAME", "")
+          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+            raise SystemExit(f"Invalid tag: {tag!r}. Expected 'vMAJOR.MINOR.PATCH'.")
+
+          pyproject_path = Path("pyproject.toml")
+          data = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+          project = data.get("project", {})
+          version = project.get("version")
+          if not version:
+            raise SystemExit("Missing [project].version in pyproject.toml")
+
+          expected = tag[1:]
+          if version != expected:
+            raise SystemExit(
+              f"Version mismatch: tag is {expected!r} but pyproject.toml is {version!r}. "
+              "Please bump [project].version to match the tag before releasing."
+            )
+
+          print(f"Tag version matches pyproject.toml: {version}")
+          PY
+
+      - name: Install build tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          # build: 负责执行 PEP 517 构建（会调用 hatchling）
+          # twine: 用于检查分发包元数据
+          python -m pip install --upgrade build twine
+
+      - name: Build sdist and wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m build
+
+      - name: Verify distributions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m twine check --strict dist/*
+
+      # 发布方式 A：API Token（最通用）
+      # 1) 在 PyPI 创建 token
+      # 2) 在 GitHub 仓库 Settings -> Secrets and variables -> Actions 添加：
+      #    PYPI_API_TOKEN = pypi-****
+      - name: Publish to PyPI (token)
+        if: ${{ secrets.PYPI_API_TOKEN != '' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      # 发布方式 B：Trusted Publisher（OIDC，更安全，无需保存 token）
+      # 需要你在 PyPI 项目设置里将该 GitHub 仓库配置为 Trusted Publisher。
+      - name: Publish to PyPI (trusted publishing)
+        if: ${{ secrets.PYPI_API_TOKEN == '' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
