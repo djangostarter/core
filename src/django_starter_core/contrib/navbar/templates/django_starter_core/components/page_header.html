@@ -1,0 +1,73 @@
+<!-- components/page_header.html -->
+<div class="animate-fade-in mb-8">
+    <!-- 面包屑导航 -->
+    {% if breadcrumbs %}
+    <div class="text-sm breadcrumbs mb-4">
+        <ul>
+            {% for item in breadcrumbs %}
+                <li>
+                    {% if item.url and not forloop.last %}
+                        <a href="{{ item.url }}" class="flex items-center gap-2">
+                            {% if item.icon %}<i class="{{ item.icon }}"></i>{% endif %}
+                            {{ item.text }}
+                        </a>
+                    {% else %}
+                        <span class="flex items-center gap-2">
+                            {% if item.icon %}<i class="{{ item.icon }}"></i>{% endif %}
+                            {{ item.text }}
+                        </span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <!-- 标题区域 -->
+        {% if show_title %}
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight flex items-center gap-3">
+                {% if icon %}
+                    <i class="{{ icon }} text-primary"></i>
+                {% endif %}
+                {{ title }}
+            </h1>
+            {% if subtitle %}
+                <p class="text-base-content/60 mt-1 font-medium">{{ subtitle }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- 操作按钮 -->
+        {% if actions %}
+        <div class="flex flex-wrap gap-2">
+            {% for action in actions %}
+                <a href="{{ action.url }}" 
+                   class="btn {% if action.primary %}btn-primary{% else %}btn-outline{% endif %} gap-2">
+                    {% if action.icon %}
+                        <i class="{{ action.icon }}"></i>
+                    {% endif %}
+                    {{ action.text }}
+                </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if description %}
+        <p class="mt-4 text-base-content/80 max-w-3xl leading-relaxed">
+            {{ description }}
+        </p>
+    {% endif %}
+</div>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+    }
+</style>

@@ -1,0 +1,97 @@
+{% extends 'django_starter_core/about/_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "联系我们" %}{% endblock %}
+
+{% block content %}
+    <section class="relative overflow-hidden card bg-base-100 shadow-xl border border-base-200 p-8" data-aos="fade-up">
+        <div class="pointer-events-none absolute inset-0">
+            <div class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl"></div>
+            <div class="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-secondary/10 blur-3xl"></div>
+        </div>
+        <div class="relative">
+            <div class="flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <i class="fa-solid fa-message"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-base-content">{% trans "联系我们" %}</h1>
+                    <p class="mt-1 text-sm text-base-content/70">{% trans "我们会尽快回复你的留言。" %}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-10 grid grid-cols-12 gap-8">
+        <div class="col-span-12 lg:col-span-5" data-aos="fade-up">
+            <div class="card bg-base-100 border border-base-200 p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-base-content">{% trans "联系方式" %}</h2>
+                <p class="mt-2 text-sm leading-6 text-base-content/70">{% trans "你可以选择以下方式与我们建立联系。" %}</p>
+
+                <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                    {% for item in contact_info %}
+                        <div class="card bg-base-100 border border-base-200 p-4 hover:bg-base-200 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-base-200 text-base-content">
+                                    <i class="{{ item.icon }}"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-xs text-base-content/50">{{ item.name }}</p>
+                                    <p class="truncate text-sm font-bold text-base-content">{{ item.value }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-6 rounded-2xl border border-base-200 bg-base-200/50 p-4">
+                    <p class="text-xs text-base-content/50">{% trans "也可以先浏览" %}</p>
+                    <a href="{% url 'djs_about:index' %}" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        {% trans "返回关于我们" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-7" data-aos="fade-up" data-aos-delay="80">
+            <div class="card bg-base-100 border border-base-200 p-6 shadow-sm">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-base-content">{% trans "在线留言" %}</h2>
+                        <p class="mt-2 text-sm leading-6 text-base-content/70">{% trans "请尽量描述你的需求背景与期望，我们会更高效地帮助你。" %}</p>
+                    </div>
+                    <div class="hidden sm:flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-6 space-y-5" action="{% url 'djs_about:contact' %}">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-control w-full">
+                            <label for="{{ field.id_for_label }}" class="label">
+                                <span class="label-text font-medium">{{ field.label }}</span>
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <label class="label">
+                                    <span class="label-text-alt text-base-content/50">{{ field.help_text }}</span>
+                                </label>
+                            {% endif %}
+                            {% if field.errors %}
+                                <label class="label">
+                                    <span class="label-text-alt text-error">{{ field.errors }}</span>
+                                </label>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary rounded-full w-full">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        {% trans "发送消息" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

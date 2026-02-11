@@ -1,0 +1,1 @@
+from django_starter_core.contrib.seed.seeder import Seeder

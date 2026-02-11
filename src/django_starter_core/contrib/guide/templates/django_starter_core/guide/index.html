@@ -1,0 +1,202 @@
+{% extends '_base.html' %}
+{% load i18n static %}
+
+{% block title %}
+    {% trans "DjangoStarter - The Next Gen Foundation" %}
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'djs/guide/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="max-w-5xl mx-auto px-4 pt-16 pb-24 text-center">
+        <div class="animate-fade-in-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-300 mb-8">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                v3.0 Available
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 dark:text-white mb-8 font-sans text-balance">
+                {% trans "Build faster with" %} <br class="hidden md:block" />
+                <span class="text-gray-900 dark:text-white underline decoration-blue-500/30 decoration-4 underline-offset-4">DjangoStarter</span>
+            </h1>
+            
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10 text-balance delay-100 animate-fade-in-up">
+                {% trans "The modern foundation for your Django projects. Integrated with Django-Ninja, TailwindCSS, and HTMX for a seamless full-stack experience." %}
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center delay-200 animate-fade-in-up">
+                <a href="https://github.com/Deali-Axy/DjangoStarter" target="_blank" 
+                   class="group inline-flex items-center px-8 py-3.5 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold transition-all hover:bg-gray-800 dark:hover:bg-gray-100 hover:scale-[1.02]">
+                    <i class="fab fa-github mr-2.5 text-lg"></i>
+                    <span>{% trans "Get Started" %}</span>
+                    <i class="fas fa-arrow-right ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"></i>
+                </a>
+                <a href="{% url 'djs_docs:index' %}"
+                   class="inline-flex items-center px-8 py-3.5 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 font-medium transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600">
+                    <i class="fas fa-book mr-2.5 text-gray-400"></i>
+                    {% trans "Documentation Center" %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="max-w-7xl mx-auto px-4 pb-24">
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- API Docs Card -->
+            <a href="/docs/" class="block group delay-300 animate-fade-in-up">
+                <div class="h-full bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 hover-card-effect">
+                    <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+                        <i class="fas fa-book text-2xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {% trans "Documentation Center" %}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {% trans "Project guides, setup steps, and technical references in one place." %}
+                    </p>
+                </div>
+            </a>
+
+            <!-- Admin Panel Card -->
+            <a href="/admin" class="block group delay-300 animate-fade-in-up">
+                <div class="h-full bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 hover-card-effect">
+                    <div class="w-12 h-12 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
+                        <i class="fas fa-cog text-2xl text-green-600 dark:text-green-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                        {% trans "Admin Dashboard" %}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {% trans "Robust administration interface for managing your application data, users, and permissions." %}
+                    </p>
+                </div>
+            </a>
+
+            <!-- Demo Card -->
+            <a href="/demo" class="block group delay-300 animate-fade-in-up">
+                <div class="h-full bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 hover-card-effect">
+                    <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/50 transition-colors">
+                        <i class="fas fa-rocket text-2xl text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        {% trans "Live Demo" %}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {% trans "Explore the capabilities of DjangoStarter through interactive examples and components." %}
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="border-t border-gray-100 dark:border-gray-800"></div>
+    </div>
+
+    <!-- Tech Stack Section -->
+    <div class="py-24 bg-white dark:bg-transparent">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{% trans "Powered by Modern Tech" %}</h2>
+                <p class="text-gray-600 dark:text-gray-400">{% trans "Best-in-class tools for reliability and performance." %}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Stack Item 1 -->
+                <div class="flex flex-col items-center p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <i class="fab fa-python text-4xl text-gray-700 dark:text-gray-300 mb-4"></i>
+                    <span class="font-semibold text-gray-900 dark:text-white">Django 6.0+</span>
+                    <span class="text-sm text-gray-500 mt-1">Backend</span>
+                </div>
+                <!-- Stack Item 2 -->
+                <div class="flex flex-col items-center p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <i class="fas fa-bolt text-4xl text-gray-700 dark:text-gray-300 mb-4"></i>
+                    <span class="font-semibold text-gray-900 dark:text-white">Django-Ninja</span>
+                    <span class="text-sm text-gray-500 mt-1">Fast API</span>
+                </div>
+                <!-- Stack Item 3 -->
+                <div class="flex flex-col items-center p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <i class="fas fa-wind text-4xl text-gray-700 dark:text-gray-300 mb-4"></i>
+                    <span class="font-semibold text-gray-900 dark:text-white">Tailwind CSS</span>
+                    <span class="text-sm text-gray-500 mt-1">Styling</span>
+                </div>
+                <!-- Stack Item 4 -->
+                <div class="flex flex-col items-center p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <i class="fas fa-code text-4xl text-gray-700 dark:text-gray-300 mb-4"></i>
+                    <span class="font-semibold text-gray-900 dark:text-white">HTMX</span>
+                    <span class="text-sm text-gray-500 mt-1">Interactivity</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start & Resources -->
+    <div class="max-w-7xl mx-auto px-4 pb-24">
+        <div class="grid lg:grid-cols-2 gap-12">
+            <!-- Quick Start -->
+            <div class="bg-gray-900 text-white rounded-2xl p-8 shadow-xl">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fas fa-terminal text-blue-400"></i>
+                    {% trans "Quick Start" %}
+                </h3>
+                <div class="space-y-6 font-mono text-sm">
+                    <div>
+                        <div class="text-gray-400 mb-2"># 1. Clone the repository</div>
+                        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 flex justify-between items-center group cursor-pointer hover:border-gray-600 transition-colors">
+                            <code class="text-blue-300">git clone https://github.com/Deali-Axy/DjangoStarter.git</code>
+                            <i class="far fa-copy text-gray-500 group-hover:text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-gray-400 mb-2"># 2. Install dependencies</div>
+                        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                            <code class="text-blue-300">pdm install</code>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-gray-400 mb-2"># 3. Run server</div>
+                        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                            <code class="text-green-300">python manage.py runserver</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources List -->
+            <div class="flex flex-col justify-center">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{% trans "Explore More" %}</h3>
+                <div class="space-y-4">
+                    {% for item in projects|slice:":3" %}
+                    <a href="{{ item.url }}" target="_blank" class="flex items-center p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-project-diagram text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900 dark:text-white">{{ item.title }}</div>
+                            {% if item.description %}
+                            <div class="text-sm text-gray-500">{{ item.description|truncatechars:50 }}</div>
+                            {% endif %}
+                        </div>
+                        <i class="fas fa-arrow-right ml-auto text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                    </a>
+                    {% endfor %}
+                    
+                    <a href="https://github.com/Deali-Axy" target="_blank" class="flex items-center p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all group">
+                         <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-4">
+                            <i class="fas fa-ellipsis-h text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <span class="font-medium text-gray-600 dark:text-gray-300">{% trans "View all projects" %}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

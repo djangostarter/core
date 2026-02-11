@@ -1,0 +1,81 @@
+{% extends "_base.html" %}
+{% load static page_tags %}
+
+{% block title %}{{ page_title }} - DjangoStarter Docs{% endblock %}
+
+{% block head %}
+<!-- Highlight.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="drawer lg:drawer-open min-h-[calc(100vh-10rem)] rounded-box border border-base-200 bg-base-100 shadow-sm mb-8">
+    <input id="docs-drawer" type="checkbox" class="drawer-toggle" />
+    
+    <!-- Main Content Area -->
+    <!-- Added id for HTMX target -->
+    <div id="doc-main-content" class="drawer-content">
+        {% include "django_starter_core/docs/_doc_content.html" %}
+    </div>
+
+    <!-- Left Sidebar (Drawer Side) -->
+    <div class="drawer-side z-50 lg:z-auto">
+        <label for="docs-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+        <!-- Added id for HTMX OOB Swap -->
+        <div id="doc-sidebar-menu" class="menu p-4 w-72 min-h-full bg-base-100 lg:bg-transparent text-base-content border-r lg:border-none border-base-200">
+            {% include "django_starter_core/docs/_sidebar_menu.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    function initDocs() {
+        // Init Highlight.js
+        hljs.highlightAll();
+
+        // Copy Code Button Logic
+        document.querySelectorAll('pre').forEach((pre) => {
+            if (pre.parentNode.classList.contains('relative') && pre.parentNode.classList.contains('group')) {
+                return; // Already initialized
+            }
+
+            // Wrapper for positioning
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative group mb-4';
+            
+            // Replace pre with wrapper in DOM
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            // Styling the pre to look nice with the button
+            pre.className += ' !bg-[#0d1117] !p-4 !rounded-xl !my-0'; // Force GitHub Dark bg
+            
+            // Create button
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-xs btn-square btn-ghost absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all bg-base-100/10 hover:bg-base-100/20 text-white';
+            btn.innerHTML = '<i class="fas fa-copy"></i>';
+            btn.title = "复制代码";
+            
+            btn.onclick = () => {
+                const code = pre.querySelector('code').innerText;
+                navigator.clipboard.writeText(code);
+                btn.innerHTML = '<i class="fas fa-check text-success"></i>';
+                setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i>', 2000);
+            };
+            wrapper.appendChild(btn);
+        });
+    }
+
+    // Initial load
+    initDocs();
+
+    // Re-init on HTMX swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        initDocs();
+    });
+</script>
+{% endblock %}
